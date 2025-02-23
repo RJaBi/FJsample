@@ -1,0 +1,30 @@
+name = "FJsample"
+version = "0.0.1"
+license = "MIT"
+author = "Ryan Bignell"
+maintainer = "ryan07bignell+github@gmail.com"
+copyright = "Copyright 2025, Ryan Bignell"
+
+[build]
+auto-executables = true
+auto-tests = true
+auto-examples = true
+module-naming = true
+
+[install]
+library = true
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
+
+
+[extra.fortitude.check]
+ignore = [
+       "S041",  # (/ /)
+       "S051",  # allows .gt.
+       ]
+preview = true
+line-length = 132  # 132 is apparently an implicit standard in compilers?
+	      	   # not sure this is actually working here...
