@@ -51,10 +51,12 @@ def mean(data):
 
 def jackErr(data):
     data = asarray(data)
+    # the function returns the error and the bias
+    # the [0] selects only the error
     if issubdtype(data.dtype, float64):
-        return jackError_wp(data)
+        return jackError_wp(data)[0]
     elif issubdtype(data.dtype, complex128):
-        return jackError_wc(data)
+        return jackError_wc(data)[0]
     else:
         raise TypeError(f'Unsupported data type {data.dtype}')
 

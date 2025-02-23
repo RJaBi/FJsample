@@ -5,8 +5,8 @@ module FJsample_c
 
    ! Todo: Just make this public and make fortitude-lint ignore that rule for this file
    public :: say_hello_c
-   public :: Complement0_c, Complement1_c, Complement2_c, Complement3_c, jackError_WP
-   public :: Complement0_wc_c, Complement1_wc_c, Complement2_wc_c, Complement3_wc_c, jackError_WC
+   public :: Complement0_c, Complement1_c, Complement2_c, Complement3_c, jackError_WP_c
+   public :: Complement0_wc_c, Complement1_wc_c, Complement2_wc_c, Complement3_wc_c, jackError_WC_c
 
 contains
    subroutine say_hello_c()
@@ -41,16 +41,16 @@ contains
       call Complement(ncon, cset, data, icon, jcon)
    end subroutine Complement3_C
 
-   subroutine JackError_wp(ncon, c, err, bias)
+   subroutine JackError_wp_c(ncon, c, err, bias)
       ! This subroutine works
       ! but just rescale np.cov by (ncon - 1)
       integer(kind=C_INT), intent(in) :: ncon
       real(kind=C_DOUBLE), dimension(0:ncon), intent(in) :: c
       real(kind=C_DOUBLE), intent(out) :: err
-      real(kind=C_DOUBLE), optional, intent(out) :: bias
+      real(kind=C_DOUBLE), intent(out) :: bias
       real(kind=C_DOUBLE) :: avg
       call jackError(ncon, c, err, bias)
-   end subroutine JackError_wp
+   end subroutine JackError_wp_c
 
    ! C_DOUBLE_COMPLEX
    subroutine Complement0_wc_c(cset, data)
@@ -86,7 +86,7 @@ contains
       integer(kind=C_INT), intent(in) :: ncon
       complex(kind=C_DOUBLE), dimension(0:ncon), intent(in) :: c
       complex(kind=C_DOUBLE), intent(out) :: err
-      complex(kind=C_DOUBLE), optional, intent(out) :: bias
+      complex(kind=C_DOUBLE), intent(out) :: bias
       complex(kind=C_DOUBLE) :: avg
       call jackError(ncon, c, err, bias)
    end subroutine JackError_wc_c
