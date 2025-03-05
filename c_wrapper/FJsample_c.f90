@@ -1,6 +1,6 @@
 module FJsample_c
    use FJsample, only: say_hello, Complement, jackError, C_DOUBLE, C_DOUBLE_COMPLEX, C_INT
-   implicit none(external)
+   implicit none
    private
 
    ! Todo: Just make this public and make fortitude-lint ignore that rule for this file
@@ -84,10 +84,10 @@ contains
       ! This subroutine works
       ! but just rescale np.cov by (ncon - 1)
       integer(kind=C_INT), intent(in) :: ncon
-      complex(kind=C_DOUBLE), dimension(0:ncon), intent(in) :: c
-      complex(kind=C_DOUBLE), intent(out) :: err
-      complex(kind=C_DOUBLE), intent(out) :: bias
-      complex(kind=C_DOUBLE) :: avg
+      complex(kind=C_DOUBLE_COMPLEX), dimension(0:ncon), intent(in) :: c
+      complex(kind=C_DOUBLE_COMPLEX), intent(out) :: err
+      complex(kind=C_DOUBLE_COMPLEX), intent(out) :: bias
+      complex(kind=C_DOUBLE_COMPLEX) :: avg
       call jackError(ncon, c, err, bias)
    end subroutine JackError_wc_c
 

@@ -58,7 +58,7 @@ def main():
     # Generate x values
     xVals = np.asarray(range(1, 32))
     # NSamples
-    nSample = 100000
+    nSample = 400
 
     # 4 operators
     A = np.asarray([[1.0, 0.4, 0.2, 0.5], [0.4, 1.0, 0.45, 0.7], [0.2, 0.45, 1.0, 0.6],
@@ -184,6 +184,7 @@ def main():
     yJErr = np.empty([len(xVals), 4, 4])
     # Mean
     yM = np.empty([len(xVals), 4, 4])
+    # Values
     for ii in range(0, len(xVals)):
         for aa in range(0, 4):
             for bb in range(0, 4):
@@ -205,10 +206,19 @@ def main():
                                                                    right[icon, :, :],
                                                                    left=True,
                                                                    right=True)
+    # Solve it on the mean of the jackknifes
+    wJM, vlJM, vrJM = linalg.eig(np.mean(left, axis=0),
+                                 np.mean(right, axis=0),
+                                 left=True,
+                                 right=True)
+    # Solve it on actual mean
+    wM, vlM, vrM = linalg.eig(yM[t0 + dt, :, :], yM[t0, :, :], left=True, right=True)
+
     # project all at once
-    #conString = 'nia,ntij,nja->nta'
-    #contracted = np.einsum(conString, vlS, yJ1, vrS)
-    contracted = np.einsum('ia,ntij,ja->nta', vl, yJ1, vr)
+    conString = 'nia,ntij,nja->nta'
+    contracted = np.einsum(conString, vlS, yJ1, vrS)
+    #contracted = np.einsum('ia,ntij,ja->nta', vlM, yJ1, vrM)
+    #contracted = np.einsum('ia,ntij,ja->nta', vl, yJ1, vr)
     # Now i will make it into a GV (to make plotting easier)
     yJGV = gv.dataset.avg_data(contracted, spread=True, median=False)
     yJGV_Covariance = gv.evalcov(yJGV)  # First get covariance matrix
@@ -259,6 +269,83 @@ def main():
     ax.legend(handles=legend.legend_handles, labels=legendLabels, loc='best', ncol=2)
     # show
     plt.savefig('GEVP_Jack.pdf')
+    plt.close()
+
+    #############################################################################
+    # Let's solve the GEVP on sampled GV
+    t0 = 2
+    dt = 3
+    left = np.empty([4, 4], dtype=object)
+    right = np.empty([4, 4], dtype=object)
+    dSGVArray = np.empty([len(xVals), 4, 4], dtype=object)
+    for ii in range(0, len(A)):
+        for jj in range(0, len(A)):
+            lab = f'A{ii}_A{jj}'
+            left[ii, jj] = dSGV[lab][t0 + dt]
+            right[ii, jj] = dSGV[lab][t0]
+            dSGVArray[:, ii, jj] = dSGV[lab]
+    # Can't use GV in linalg.eig!!
+    left = gv.mean(left)
+    right = gv.mean(right)
+    w, vl, vr = linalg.eig(left, right, left=True, right=True)
+    w = np.real(w)  # It's guaranteed real but for machine precision...
+    print('w', w)
+    print('vl', vl)
+    print('vr', vr)
+
+    # Do the projection correlated to plot to show the data isn't crazy
+    GProj = np.empty([len(xVals), 4], dtype=object)
+    # Use einsum to do multiplication
+    conString = 'ia,tij,ja->ta'
+    # opt_einsum required as it is 'objects' (gvars)
+    contracted = opt_einsum.contract(conString, vl, dSGVArray, vr, backend='object')
+    fig, ax = plt.subplots(figsize=(16.6, 11.6))
+    legendLabels = []
+    for ii in range(0, 4):
+        GProj[:, ii] = contracted[..., ii]
+        # Calculate effective mass for projected correlator
+        effE = effE_forward(1.0, GProj[:, ii])
+        ax.errorbar(xVals,
+                    y=gv.mean(effE),
+                    yerr=gv.sdev(effE),
+                    label=f'GEVP {ii}',
+                    marker='d',
+                    linestyle='')
+        # calculate effective mass for diagonal correlators
+        effEiiii = effE_forward(1.0, dSGV[f'A{ii}_A{ii}'])
+        ax.errorbar(xVals,
+                    y=gv.mean(effEiiii),
+                    yerr=gv.sdev(effEiiii),
+                    label=f'A{ii}_A{ii}',
+                    marker='d',
+                    linestyle='')
+        # Plot Truths
+        ax.axhline(gv.mean(E[ii]), linestyle='--', color='gray')
+        ax.axhspan(gv.mean(E[ii]) - gv.sdev(E[ii]),
+                   gv.mean(E[ii]) + gv.sdev(E[ii]),
+                   alpha=0.25,
+                   color='gray',
+                   linewidth=0)
+        legendLabels.append(f'GEVP {ii}')
+        legendLabels.append(f'A{ii}_A{ii}')
+    # plot limits
+    ax.set_ylim([0, 2])
+    # Cut off just before end
+    ax.set_xlim([0, xVals[-1] - 1])
+    # labels
+    ax.set_ylabel('$a_\\tau\\,E$')
+    ax.set_xlabel('$\\tau/ a_\\tau$')
+    # add a label to the truth lines
+    truth_line = mpl.lines.Line2D([], [], color='gray', label='$\\text{Truth}$', ls='--')
+    # Get the current legend
+    legend = ax.legend()
+    # Add the new line to the legend
+    legend.legend_handles.append(truth_line)
+    legendLabels.append('$\\text{Truth}$')
+    # Update the legend
+    ax.legend(handles=legend.legend_handles, labels=legendLabels, loc='best', ncol=2)
+    # show
+    plt.savefig('GEVP_JGVMean.pdf')
     plt.close()
 
     sys.exit()

@@ -1,5 +1,5 @@
 module FJsample__types
-   use ISO_C_BINDING, only: C_DOUBLE, C_DOUBLE_COMPLEX, C_INT
+   use, intrinsic :: ISO_C_BINDING, only: C_DOUBLE, C_DOUBLE_COMPLEX, C_INT
    implicit none(external)
    private
    integer, parameter :: dp = C_DOUBLE

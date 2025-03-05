@@ -1,5 +1,5 @@
 name = "FJsample"
-version = "0.0.1"
+version = "0.1.0"
 license = "MIT"
 author = "Ryan Bignell"
 maintainer = "ryan07bignell+github@gmail.com"
@@ -22,9 +22,11 @@ source-form = "free"
 
 [extra.fortitude.check]
 ignore = [
-       "S041",  # (/ /)
-       "S051",  # allows .gt.
+       "MOD011",  # (/ /)
+       "MOD021",  # allows .gt.
        ]
 preview = true
 line-length = 132  # 132 is apparently an implicit standard in compilers?
 	      	   # not sure this is actually working here...
+[extra.check.per-file-ignores]
+"c_wrapper/FJsample_c.f90" = ["C003"]  # f2py doesn't know how to handle implicit none(external)
