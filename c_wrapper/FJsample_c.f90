@@ -1,5 +1,5 @@
 module FJsample_c
-   use FJsample, only: say_hello, Complement, jackError, C_DOUBLE, C_DOUBLE_COMPLEX, C_INT
+   use FJsample, only: say_hello, Complement, jackError, C_DOUBLE, C_DOUBLE_COMPLEX, C_INT, bootComplement, stdDev
    implicit none
    private
 
@@ -7,12 +7,16 @@ module FJsample_c
    public :: say_hello_c
    public :: Complement0_c, Complement1_c, Complement2_c, Complement3_c, jackError_WP_c
    public :: Complement0_wc_c, Complement1_wc_c, Complement2_wc_c, Complement3_wc_c, jackError_WC_c
+   public :: bootComplement1_ncon_c, bootComplement1_WC_ncon_c
+   public :: stdDev_WP_c, stdDev_WC_c
 
 contains
    subroutine say_hello_c()
       call say_hello()
    end subroutine say_hello_c
-
+   !
+   ! ! Jackknifes
+   !
    ! C_DOUBLE
    subroutine Complement0_c(cset, data)
       real(kind=C_DOUBLE), intent(out) :: cset
@@ -90,5 +94,38 @@ contains
       complex(kind=C_DOUBLE_COMPLEX) :: avg
       call jackError(ncon, c, err, bias)
    end subroutine JackError_wc_c
+
+   !
+   ! ! Bootstraps
+   !
+   subroutine bootComplement1_ncon_c(ncon, nboot, data, cset, sampleIDs)
+      integer(kind=C_INT), intent(in) :: ncon, nboot
+      real(kind=C_DOUBLE), dimension(nboot), intent(out) :: cset
+      real(kind=C_DOUBLE), dimension(ncon), intent(in) :: data
+      integer(kind=C_INT), dimension(nboot, ncon), intent(out) :: sampleIDs
+      call bootComplement(ncon, nboot, ncon, cset, data, sampleIDS)
+   end subroutine BootComplement1_Ncon_C
+
+   subroutine bootComplement1_WC_ncon_c(ncon, nboot, data, cset, sampleIDs)
+      integer(kind=C_INT), intent(in) :: ncon, nboot
+      complex(kind=C_DOUBLE_COMPLEX), dimension(nboot), intent(out) :: cset
+      complex(kind=C_DOUBLE_COMPLEX), dimension(ncon), intent(in) :: data
+      integer(kind=C_INT), dimension(nboot, ncon), intent(out) :: sampleIDs
+      call bootComplement(ncon, nboot, ncon, cset, data, sampleIDS)
+   end subroutine BootComplement1_WC_Ncon_C
+
+   subroutine stdDev_WP_c(nboot, c, err)
+      integer(kind=C_INT), intent(in) :: nboot
+      real(kind=C_DOUBLE), dimension(nboot), intent(in) :: c
+      real(kind=C_DOUBLE), intent(out) :: err
+      call stdDev(c, err)
+   end subroutine stdDev_WP_c
+
+   subroutine stdDev_WC_c(nboot, c, err)
+      integer(kind=C_INT), intent(in) :: nboot
+      complex(kind=C_DOUBLE_COMPLEX), dimension(nboot), intent(in) :: c
+      complex(kind=C_DOUBLE_COMPLEX), intent(out) :: err
+      call stdDev(c, err)
+   end subroutine stdDev_WC_c
 
 end module FJsample_c

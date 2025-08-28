@@ -20,11 +20,11 @@ skip = ["*-win32"]
 
 [project]
 name = "FJsample"
-version = "0.0.1"
+version = "0.2.0"
 authors = [{name = "Ryan Bignell", email = "ryan07bignell+github@gmail.com"}]
 license = {text = "MIT"}
 readme = "README.md"
-description = "Jackknife resampling in Fortran with python bindings"
+description = "Jackknife & bootstrap resampling in Fortran with python bindings"
 
 
 dependencies = [

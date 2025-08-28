@@ -1,11 +1,19 @@
 project('FJsample', 'c',
-  version : '0.1.0',
+  version : '0.2.0',
   license: 'MIT',
   meson_version: '>=0.64.0',
   default_options : ['warning_level=2'],
 )
 
 add_languages('fortran', native: false)
+
+
+# Set the fortran compiler
+
+env = environment()
+FortCompiler = 'gfortran15.1'
+env.set('FC', FortCompiler)
+env.set('FPM_FC', FortCompiler)
 
 meson_path = meson.current_build_dir()
 
@@ -31,19 +39,28 @@ fflags = '-g -fbacktrace -march=native -fPIC -funroll-loops -fstack-arrays -O3 -
 cflags = '-fPIC'
 fpm_build_dir = meson_path / 'fpm_build'
 
-run_command(
-    'fpm',
-    'install',
-    '--profile',
-    'release',
-    '--flag',
-    fflags,
-    '--c-flag',
-    cflags,
-    '--prefix',
-    fpm_build_dir,
-    check : true
+
+
+fpm_result = run_command(
+  'fpm',
+  'install',
+  '--profile',
+  'release',
+  '--compiler',
+  FortCompiler,
+  '--flag',
+  fflags,
+  '--c-flag',
+  cflags,
+  '--prefix',
+  fpm_build_dir,
+  check : false
 )
+
+if fpm_result.returncode() != 0
+  error('FPM build failed. Please check for FPM and also ensure you are using gfortran15.1+, IFX2024+ or NVHPC. Other compilers are untested')
+endif
+
 
 # f2py
 source_path = meson.project_source_root() / '..' / 'c_wrapper' / 'FJsample_c.f90'
@@ -67,7 +84,7 @@ FJsample_source = custom_target('FJsample_compiled.c',
 f_sources = ['FJsample/compiled/__init__.py']
 py.install_sources(f_sources, subdir:'FJsample/compiled')
 
-main_sources = ['FJsample/__init__.py', 'FJsample/main.py', 'FJsample/jack.py']
+main_sources = ['FJsample/__init__.py', 'FJsample/main.py', 'FJsample/jack.py', 'FJsample/boot.py']
 py.install_sources(main_sources, subdir:'FJsample')
 
 # Extension fortran module
