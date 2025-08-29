@@ -59,7 +59,7 @@ contains
       integer, intent(in) :: ncon, nboot
       real(kind=WP), dimension(nboot), intent(out) :: cset
       real(kind=WP), dimension(ncon), intent(in) :: data
-      integer, dimension(nboot, nboot), intent(in) :: sampleIDs
+      integer, dimension(nboot, ncon), intent(in) :: sampleIDs
       logical, intent(in) :: reuse
       real(kind=WP), dimension(nboot, nboot) :: randomNums
       integer :: cc, aa
@@ -124,7 +124,7 @@ contains
                   integer, intent(in) :: ncon, nboot
                   complex(kind=WC), dimension(nboot), intent(out) :: cset
                   complex(kind=WC), dimension(ncon), intent(in) :: data
-                  integer, dimension(nboot, nboot), intent(in) :: sampleIDs
+                  integer, dimension(nboot, ncon), intent(in) :: sampleIDs
                   logical, intent(in) :: reuse
                   real(kind=WP), dimension(nboot, nboot) :: randomNums
                   integer :: cc, aa
