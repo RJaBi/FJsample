@@ -8,6 +8,7 @@ module FJsample_c
    public :: Complement0_c, Complement1_c, Complement2_c, Complement3_c, jackError_WP_c
    public :: Complement0_wc_c, Complement1_wc_c, Complement2_wc_c, Complement3_wc_c, jackError_WC_c
    public :: bootComplement1_ncon_c, bootComplement1_WC_ncon_c
+   public :: bootComplement1_reuse_c, bootComplement1_WC_reuse_c
    public :: stdDev_WP_c, stdDev_WC_c
 
 contains
@@ -106,6 +107,16 @@ contains
       call bootComplement(ncon, nboot, ncon, cset, data, sampleIDS)
    end subroutine BootComplement1_Ncon_C
 
+   subroutine bootComplement1_reuse_c(ncon, nboot, data, cset, sampleids, reuse)
+      integer(kind=C_INT), intent(in) :: ncon, nboot
+      real(kind=C_DOUBLE), dimension(nboot), intent(out) :: cset
+      real(kind=C_DOUBLE), dimension(ncon), intent(in) :: data
+      integer(kind=C_INT), dimension(nboot, ncon), intent(in) :: sampleIDs
+      integer(kind=C_INT), intent(in) :: reuse
+      logical :: reuseVar = .TRUE.
+      call bootComplement(ncon, nboot, cset, data, sampleIDS, reuse=reuseVar)
+   end subroutine BootComplement1_Reuse_C
+
    subroutine bootComplement1_WC_ncon_c(ncon, nboot, data, cset, sampleIDs)
       integer(kind=C_INT), intent(in) :: ncon, nboot
       complex(kind=C_DOUBLE_COMPLEX), dimension(nboot), intent(out) :: cset
@@ -113,6 +124,16 @@ contains
       integer(kind=C_INT), dimension(nboot, ncon), intent(out) :: sampleIDs
       call bootComplement(ncon, nboot, ncon, cset, data, sampleIDS)
    end subroutine BootComplement1_WC_Ncon_C
+
+   subroutine bootComplement1_WC_reuse_c(ncon, nboot, data, cset, sampleids, reuse)
+      integer(kind=C_INT), intent(in) :: ncon, nboot
+      complex(kind=C_DOUBLE_COMPLEX), dimension(nboot), intent(out) :: cset
+      complex(kind=C_DOUBLE_COMPLEX), dimension(ncon), intent(in) :: data
+      integer(kind=C_INT), dimension(nboot, ncon), intent(in) :: sampleIDs
+      integer(kind=C_INT), intent(in) :: reuse
+      logical :: reuseVar = .TRUE.
+      call bootComplement(ncon, nboot, cset, data, sampleIDS, reuse=reuseVar)
+   end subroutine BootComplement1_WC_Reuse_C
 
    subroutine stdDev_WP_c(nboot, c, err)
       integer(kind=C_INT), intent(in) :: nboot

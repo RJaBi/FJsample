@@ -14,6 +14,9 @@ program main
    real(kind=WP), dimension(0:nboot) :: boot
    integer, dimension(nboot, nsize) :: bootIDs
    real(kind=WP) :: bootErr
+   ! Do it again
+   real(kind=WP), dimension(0:nboot) :: boot2
+   real(kind=WP) :: bootErr2
    call say_hello()
    call initRandom(5)
    ! Just fill it with some random data
@@ -32,5 +35,10 @@ program main
    write (*, *) 'boot'
    write (*, *) 'mean, err'
    write (*, *) boot(0), bootErr
-
+   call bootComplement(ncon, nboot, boot2(1:), raw_data, bootIDs, reuse=.TRUE.)
+   boot2(0) = SUM(boot2(1:)) / real(nboot, kind=WP)
+   call stdDev(boot2(1:), bootErr2)
+   write (*, *) 'boot2'
+   write (*, *) 'mean, err'
+   write (*, *) boot2(0), bootErr2
 end program main
