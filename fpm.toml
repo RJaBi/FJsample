@@ -20,6 +20,12 @@ implicit-external = false
 source-form = "free"
 
 
+[preprocess]
+[preprocess.cpp]
+suffixes = ["F90"]
+#macros=['LOCALITYSUPPORT=1']  # UNCOMMENT THIS TO ENABLE IT
+
+
 [extra.fortitude.check]
 ignore = [
        "MOD011",  # allows (/ /)
