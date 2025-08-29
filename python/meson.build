@@ -11,7 +11,7 @@ add_languages('fortran', native: false)
 # Set the fortran compiler
 
 env = environment()
-FortCompiler = 'gfortran15.1'
+FortCompiler = 'gfortran'
 env.set('FC', FortCompiler)
 env.set('FPM_FC', FortCompiler)
 
@@ -41,7 +41,8 @@ fpm_build_dir = meson_path / 'fpm_build'
 
 
 
-fpm_result = run_command(
+#fpm_result = run_command(
+run_command(
   'fpm',
   'install',
   '--profile',
@@ -54,13 +55,8 @@ fpm_result = run_command(
   cflags,
   '--prefix',
   fpm_build_dir,
-  check : false
+  check : true
 )
-
-if fpm_result.returncode() != 0
-  error('FPM build failed. Please check for FPM and also ensure you are using gfortran15.1+, IFX2024+ or NVHPC. Other compilers are untested')
-endif
-
 
 # f2py
 source_path = meson.project_source_root() / '..' / 'c_wrapper' / 'FJsample_c.f90'
